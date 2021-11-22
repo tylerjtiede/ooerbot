@@ -11,10 +11,10 @@ from glob import glob
 
 # twitter auth
 
-CONSUMER_KEY = 'FQ3inobIDr0EuBkgUjhxps0zN'
-CONSUMER_SECRET = '5I8zFNwS5MNjtV8dPfmC8kEcRybLLckI3oBKfPeHvEsWArObcE'
-ACCESS_TOKEN = '1459323608992464900-BGv398n6nnO80cfgxWbGC0Fw62vCbS'
-ACCESS_TOKEN_SECRET = 'WHgAighKDPoeoCNll7n030vEA3qVDxD0Kzasu8YsGLouc'
+CONSUMER_KEY = ''
+CONSUMER_SECRET = ''
+ACCESS_TOKEN = ''
+ACCESS_TOKEN_SECRET = ''
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
@@ -45,8 +45,8 @@ def redditSetup(sub):
     print('setting up connection with reddit')
     reddit = praw.Reddit(
         user_agent='reddit Twitter tool monitoring ',
-        client_id='alojLIlr1BwNAiqw3xpeiA',
-        client_secret='i6YdLZKfw2JrbIXXtTGK_p51nbdH9w')
+        client_id='',
+        client_secret='')
     return reddit.subreddit(sub)
 
 
