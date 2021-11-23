@@ -20,10 +20,6 @@ auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 api = tweepy.API(auth)
 
-#
-# main bot code
-#
-
 # variables
 
 hotLimit = 24
@@ -40,6 +36,9 @@ tweetDelay = 3600 #delay between tweets in seconds
 
 subreddit = 'ooer'
 
+#
+# main bot code
+#
 
 def redditSetup(sub):
     print('setting up connection with reddit')
@@ -51,6 +50,7 @@ def redditSetup(sub):
 
 
 def tweetCreator(subredditInfo):
+    # pulls posts from reddit, excluding stickied posts
     postDict = {}
     postIDs = []
 
@@ -65,7 +65,6 @@ def tweetCreator(subredditInfo):
             # "submission.url" instead of "submission.permalink"
             postDict[submission.title] = {}
             post = postDict[submission.title]
-            # post['link'] = submission.url
 
             # Store the url the post points to (if any)
             # If it's an imgur URL, it will later be downloaded and uploaded alongside the tweet
@@ -79,6 +78,7 @@ def tweetCreator(subredditInfo):
 
 
 def alreadyTweeted(postID):
+    # checks posted.txt for the post id to avoid duplicates
     found = False
     with open(postedCache, 'r') as inFile:
         for line in inFile:
@@ -89,7 +89,7 @@ def alreadyTweeted(postID):
 
 
 def stripTitle(title, numChar):
-    #shortens to 140 char lmiit
+    # shortens to 140 char lmiit
     if len(title) <= numChar:
         return title
     else:
@@ -97,6 +97,9 @@ def stripTitle(title, numChar):
 
 
 def getImage(imageUrl):
+    # gets the images then downloads them if they are the right url type
+    # won't download i.redd.it posts with .gif extension
+    # since gifs tend to cause issues when posting to twitter
     if 'imgur.com' in imageUrl or 'i.redd.it' in imageUrl:
         fileName = os.path.basename(urllib.parse.urlsplit(imageUrl).path)
         if not '.gif' in fileName:
@@ -115,12 +118,14 @@ def getImage(imageUrl):
     return ''
 
 def removeGif(path):
+    # function to remove gifs from img directory if necessary. not currently being used
     removeDir = os.listdir(path)
     for item in removeDir:
         if item.endswith(".gif"):
             os.remove(os.path.join(path), item)
 
 def tweeter(postDict, postIDs):
+    # creates the tweet
     for post, postID in zip(postDict, postIDs):
         imagePath = postDict[post]['imagePath']
 
@@ -137,12 +142,12 @@ def tweeter(postDict, postIDs):
 
 
 def logTweet(postID):
+    # logs post id in posted.txt cache
     with open(postedCache, 'a') as outFile:
         outFile.write(str(postID) + '\n')
 
 def main():
-
-
+    #runs through everything
     if not os.path.exists(postedCache):
         with open(postedCache, 'w'):
             pass
