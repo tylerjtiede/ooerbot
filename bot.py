@@ -99,19 +99,26 @@ def stripTitle(title, numChar):
 def getImage(imageUrl):
     if 'imgur.com' in imageUrl or 'i.redd.it' in imageUrl:
         fileName = os.path.basename(urllib.parse.urlsplit(imageUrl).path)
-        imagePath = imgDir + '/' + fileName
-        print('downloading image at url ' + imageUrl + '  to  ' + imagePath)
-        resp = requests.get(imageUrl, stream=True)
-        if resp.status_code == 200:
-            with open(imagePath, 'wb') as imageFile:
-                for chunk in resp:
-                    imageFile.write(chunk)
-            return imagePath
-        else:
-            print('image failed to download. status code:' + resp.status_code)
+        if not '.gif' in fileName:
+            imagePath = imgDir + '/' + fileName
+            print('downloading image at url ' + imageUrl + '  to  ' + imagePath)
+            resp = requests.get(imageUrl, stream=True)
+            if resp.status_code == 200:
+                with open(imagePath, 'wb') as imageFile:
+                    for chunk in resp:
+                        imageFile.write(chunk)
+                return imagePath
+            else:
+                print('image failed to download. status code:' + resp.status_code)
     else:
         print('post doesn\'t point to an i.imgur.com or i.redd.it link')
     return ''
+
+def removeGif(path):
+    removeDir = os.listdir(path)
+    for item in removeDir:
+        if item.endswith(".gif"):
+            os.remove(os.path.join(path), item)
 
 def tweeter(postDict, postIDs):
     for post, postID in zip(postDict, postIDs):
@@ -133,9 +140,9 @@ def logTweet(postID):
     with open(postedCache, 'a') as outFile:
         outFile.write(str(postID) + '\n')
 
-
-
 def main():
+
+
     if not os.path.exists(postedCache):
         with open(postedCache, 'w'):
             pass
@@ -145,6 +152,7 @@ def main():
     sub = redditSetup(subreddit)
     postDict, postIDs = tweetCreator(sub)
     tweeter(postDict, postIDs)
+
 
     for filename in glob(imgDir + '/*'):
         os.remove(filename)
