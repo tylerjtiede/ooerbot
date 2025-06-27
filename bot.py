@@ -6,15 +6,21 @@ import time
 import os
 import urllib.parse
 from glob import glob
+from dotenv import load_dotenv, dotenv_values
 
+load_dotenv()
 
+# keys
 
-# twitter auth
+# twitter
+CONSUMER_KEY = os.getenv("CONSUMER_KEY")
+CONSUMER_SECRET = os.getenv("CONSUMER_SECRET")
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
+ACCESS_TOKEN_SECRET = os.getenv("ACCESS_TOKEN_SECRET")
 
-CONSUMER_KEY = 'FQ3inobIDr0EuBkgUjhxps0zN'
-CONSUMER_SECRET = '5I8zFNwS5MNjtV8dPfmC8kEcRybLLckI3oBKfPeHvEsWArObcE'
-ACCESS_TOKEN = '1459323608992464900-BGv398n6nnO80cfgxWbGC0Fw62vCbS'
-ACCESS_TOKEN_SECRET = 'WHgAighKDPoeoCNll7n030vEA3qVDxD0Kzasu8YsGLouc'
+# reddit
+CLIENT_ID = os.getenv("CLIENT_ID")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
@@ -22,7 +28,7 @@ api = tweepy.API(auth)
 
 # variables
 
-hotLimit = 24
+hotLimit = 50
 
 tweetSuffix = ''
 
@@ -44,8 +50,8 @@ def redditSetup(sub):
     print('setting up connection with reddit')
     reddit = praw.Reddit(
         user_agent='reddit Twitter tool monitoring ',
-        client_id='alojLIlr1BwNAiqw3xpeiA',
-        client_secret='i6YdLZKfw2JrbIXXtTGK_p51nbdH9w')
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET)
     return reddit.subreddit(sub)
 
 
@@ -56,7 +62,7 @@ def tweetCreator(subredditInfo):
 
     print('getting posts from reddit')
 
-    top_ten = [x for x in subredditInfo.hot(limit=hotLimit) if not x.stickied][:20] # Check for sticky posts
+    top_ten = [x for x in subredditInfo.hot(limit=hotLimit) if not x.stickied][:40] # Check for sticky posts
 
     for submission in top_ten:
         if not alreadyTweeted(submission.id):
